@@ -1,0 +1,46 @@
+version: '3'
+services:
+  
+  # Node.js API Service
+  nodejs-api:
+    build: ./node-service   
+    ports:
+      - "3000:3000"      
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=us-east-1
+      - QUEUE_URL=${QUEUE_URL}
+    depends_on:
+      - mongodb            
+    networks:
+      - internal_network  
+
+  # Python Consumer Service
+  python-consumer:
+    build: ./python-consumer 
+    depends_on:
+      - mongodb             
+    environment:
+      - MONGO_URI=${MONGO_URI}  
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - QUEUE_URL=${QUEUE_URL}
+    networks:
+      - internal_network  
+
+  # MongoDB Service
+  mongodb:
+    image: mongo:latest 
+    # ports:
+    #   - "27017:27017"    
+    volumes:
+      - ./mongo-data:/data/db 
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
+

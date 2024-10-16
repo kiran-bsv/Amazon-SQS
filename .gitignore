@@ -1,0 +1,9 @@
+.env
+
+mongo-data
+
+python-consumer/venv
+python-consumer/.env
+
+node-service/node_modules
+node-service/.env
